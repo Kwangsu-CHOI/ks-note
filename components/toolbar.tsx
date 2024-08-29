@@ -101,7 +101,7 @@ const Toolbar = ({ initialData, preview }: ToolbarProps) => {
 						</Button>
 					</IconPicker>
 				)}
-				{!initialData.coverIamge && !preview && (
+				{!initialData.coverImage && !preview && (
 					<Button
 						onClick={coverImage.onOpen}
 						className="text-muted-foreground text-xs"
