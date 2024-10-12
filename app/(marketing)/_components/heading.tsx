@@ -13,12 +13,15 @@ export const Heading = () => {
 	return (
 		<div className="max-w-3xl space-y-4">
 			<h1 className="text-3xl sm:text-5xl md:text-6xl font-bold">
-				Idea, Documents, Note, & Plans ALL TOGETHER. Welcome to{" "}
+				Welcome to{" "}
 				<span className="underline">KS-NOTE</span>
+				
 			</h1>
 			<h3 className="text-base sm:text-xl md:text-2xl font-medium">
 				KS-NOTE provides you the connected workspace where <br /> better, faster
 				work happens.
+				<br />
+				Save your ideas, documents, notes, and plans in one place.
 			</h3>
 			{isLoading && (
 				<div className="w-full flex items-center justify-center">
