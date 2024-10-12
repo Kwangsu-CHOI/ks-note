@@ -155,7 +155,7 @@ export const Item = ({
 						</DropdownMenuContent>
 					</DropdownMenu>
 					<div
-						className="opacity-0 group-hover:opacity-100 h-full ml-auto rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600"
+						className="opacity-100 md:opacity-0 group-hover:opacity-100 h-full ml-auto rounded-sm hover:bg-neutral-300 dark:hover:bg-neutral-600"
 						role="button"
 						onClick={onCreate}
 					>
