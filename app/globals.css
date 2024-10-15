@@ -103,6 +103,8 @@ body,
   color: var(--mdxeditor-text) !important;
 }
 
+
+
 /* header style */
 
 .mdxeditor .prose h1 {
@@ -214,20 +216,7 @@ body,
   font-family: 'Arial', sans-serif;
 }
 
-.mdxeditor .prose p {
-  margin-bottom: 1em;
-  text-shadow: 0.5px 0.5px 1px rgba(0,0,0,0.1);
-}
 
-.mdxeditor .prose strong {
-  color: #1a1a1a;
-  font-weight: 600;
-}
-
-.mdxeditor .prose em {
-  font-style: italic;
-  color: #4a4a4a;
-}
 
 /* 체크리스트 */
 .mdxeditor .prose li[role="checkbox"] {
