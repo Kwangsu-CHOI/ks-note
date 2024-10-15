@@ -29,10 +29,10 @@ const DocumentIdPage = ({ params }: DocumentIdPageProps) => {
 
 	const onChange = (content: string) => {
 		update({
-			id: params.documentId,
-			content,
+		  id: params.documentId,
+		  content,
 		});
-	};
+	  };
 
 	const test = () => {
 		console.log("new content", document?.content);
