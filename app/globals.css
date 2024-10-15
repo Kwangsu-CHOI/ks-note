@@ -100,6 +100,7 @@ body,
 
 .mdxeditor .prose {
   max-width: none;
+  color: var(--mdxeditor-text) !important;
 }
 
 /* header style */
