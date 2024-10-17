@@ -1,5 +1,6 @@
 "use client";
 
+import AIChat from "@/components/aiChat";
 import { Cover } from "@/components/cover";
 
 import Toolbar from "@/components/toolbar";
@@ -64,6 +65,7 @@ const DocumentIdPage = ({ params }: DocumentIdPageProps) => {
         <Toolbar initialData={document} />
         <Editor onChange={onChange} initialContent={content || document.content} />
       </div>
+      <AIChat documentContent={document.content || ""} />
     </div>
   );
 };

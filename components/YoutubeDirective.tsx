@@ -14,7 +14,6 @@ export const YoutubeDirectiveDescriptor: DirectiveDescriptor = {
   hasChildren: false,
   Editor: (props: any) => {
     const id = props.mdastNode?.attributes?.id;
-    console.log('Rendering YouTube embed with id:', id);
     return id ? <YoutubeEmbed id={id} /> : null;
   }
 };

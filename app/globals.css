@@ -330,3 +330,11 @@ body,
     background-color: var(--muted) !important;
     color: var(--foreground) !important;
   }
+
+  @media (max-width: 768px) {
+    .mdxeditor-toolbar {
+      position: sticky;
+      top: 52px;
+      z-index: 1000;
+    }
+  }

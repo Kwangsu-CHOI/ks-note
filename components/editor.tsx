@@ -63,12 +63,14 @@ interface EditorProps {
   onChange: (value: string) => void;
   initialContent?: string;
   editable?: boolean;
+  preview?: boolean;
 }
 
 const EditorContent = ({
   onChange,
   initialContent,
   editable = true,
+  preview = false,
 }: EditorProps) => {
   const { resolvedTheme } = useTheme();
   const { edgestore } = useEdgeStore();
@@ -109,25 +111,20 @@ const EditorContent = ({
 
   const handleChange = useCallback(
     (value: string) => {
-      console.log("Current markdown:", value);
       setContent(value);
       onChange(value);
     },
     [setContent, onChange]
   );
 
-  const handleUpload = async (file: File) => {
+  const handleUpload = useCallback(async (file: File) => {
     const response = await edgestore.publicFiles.upload({ file });
     return response.url;
-  };
+  }, [edgestore.publicFiles]);
 
-  // useEffect(() => {
-  //   if (editorRef.current && initialContent) {
-  //     editorRef.current.setMarkdown(initialContent);
-  //   }
-  // }, [initialContent]);
+  
 
-  const sandpackConfig: SandpackConfig = {
+  const sandpackConfig = useMemo<SandpackConfig>(() => ({
     defaultPreset: "react",
     presets: [
       {
@@ -140,7 +137,7 @@ const EditorContent = ({
         snippetLanguage: "jsx",
       },
     ],
-  };
+  }), []);
 
   const insertLineBreak = useCallback(() => {
     const editor = editorRef.current;
@@ -149,102 +146,113 @@ const EditorContent = ({
     }
   }, []);
 
+  const plugins = useMemo(() => {
+    const basePlugins = [
+      headingsPlugin({
+        allowedHeadingLevels: [1, 2, 3, 4, 5, 6],
+      }),
+      quotePlugin(),
+      listsPlugin(),
+      optimizedDiffSourcePlugin(),
+      thematicBreakPlugin(),
+      linkPlugin(),
+      linkDialogPlugin(),
+      imagePlugin({
+        imageUploadHandler: handleUpload,
+      }),
+      tablePlugin(),
+      codeBlockPlugin({ defaultCodeBlockLanguage: "js" }),
+      codeMirrorPlugin({
+        codeBlockLanguages: {
+          js: "JavaScript",
+          jsx: "JSX",
+          ts: "TypeScript",
+          tsx: "TSX",
+          css: "CSS",
+          html: "HTML",
+          python: "Python",
+        },
+      }),
+      sandpackPlugin({ sandpackConfig }),
+      diffSourcePlugin({
+        viewMode: viewMode,
+        diffMarkdown: content,
+      }),
+      markdownShortcutPlugin({
+        blockShortcuts: false,
+        inlineShortcuts: true,
+      }),
+      frontmatterPlugin(),
+      directivesPlugin({
+        directiveDescriptors: [
+          AdmonitionDirectiveDescriptor,
+          YoutubeDirectiveDescriptor,
+        ],
+      }),
+    ];
+
+    if (!preview && editable) {
+      basePlugins.push(
+        toolbarPlugin({
+          toolbarContents: () => (
+            <DiffSourceToggleWrapper>
+              <UndoRedo />
+              <Separator />
+              <BoldItalicUnderlineToggles />
+              <CodeToggle />
+              <Button 
+                onClick={insertLineBreak} 
+                title="line break"
+                className="p-1 bg-transparent text-primary hover:bg-muted"
+              >
+                <BetweenHorizontalStart className="h-4 w-4" />
+              </Button>
+              <Separator />
+              <CreateLink />
+              <InsertImage />
+              <YouTubeButton />
+              <Separator />
+              <InsertTable />
+              <InsertThematicBreak />
+              <Separator />
+              <ListsToggle />
+              <Separator />
+              <BlockTypeSelect />
+              <Separator />
+              <InsertCodeBlock />
+              <Separator />
+              <ConditionalContents
+                options={[
+                  {
+                    when: (editor) => editor?.editorType === "codeblock",
+                    contents: () => <ChangeCodeMirrorLanguage />,
+                  },
+                  {
+                    when: (editor) => editor?.editorType === "sandpack",
+                    contents: () => <ShowSandpackInfo />,
+                  },
+                ]}
+              />
+            </DiffSourceToggleWrapper>
+          ),
+        })
+      );
+    }
+
+    return basePlugins;
+  }, [preview, editable, viewMode, content, handleUpload, insertLineBreak, sandpackConfig]);
+
+
   return (
     <div ref={containerRef} className="editor-container mt-4">
       <MDXEditor
-        key="mdx-editor"
+        key={`mdx-editor-${preview}-${editable}`}
         ref={editorRef}
-        onChange={handleChange}
+        onChange={preview ? undefined : handleChange}
         markdown={initialContent || content || ""}
         contentEditableClassName="prose max-w-full whitespace-normal outline-none"
-        readOnly={!editable}
-        
-        plugins={[
-          headingsPlugin({
-            allowedHeadingLevels: [1, 2, 3, 4, 5, 6],
-          }),
-          quotePlugin(),
-          listsPlugin(),
-          optimizedDiffSourcePlugin(),
-          thematicBreakPlugin(),
-          linkPlugin(),
-          linkDialogPlugin(),
-          imagePlugin({
-            imageUploadHandler: handleUpload,
-          }),
-          tablePlugin(),
-          codeBlockPlugin({ defaultCodeBlockLanguage: "js" }),
-          codeMirrorPlugin({
-            codeBlockLanguages: {
-              js: "JavaScript",
-              jsx: "JSX",
-              ts: "TypeScript",
-              tsx: "TSX",
-              css: "CSS",
-              html: "HTML",
-              python: "Python",
-            },
-          }),
-          sandpackPlugin({ sandpackConfig }),
-          diffSourcePlugin({
-            viewMode: viewMode,
-            diffMarkdown: content,
-          }),
-          markdownShortcutPlugin({
-            blockShortcuts: false,
-            inlineShortcuts: true,
-          }),
-          frontmatterPlugin(),
-          directivesPlugin({
-            directiveDescriptors: [
-              AdmonitionDirectiveDescriptor,
-              YoutubeDirectiveDescriptor,
-            ],
-          }),
-          toolbarPlugin({
-            toolbarContents: () => (
-              <DiffSourceToggleWrapper>
-                <UndoRedo />
-                <Separator />
-                <BoldItalicUnderlineToggles />
-                <CodeToggle />
-                <Button 
-                  onClick={insertLineBreak} 
-                  title="line break"
-                  className="p-1 bg-transparent text-primary hover:bg-muted"
-                >
-                  <BetweenHorizontalStart className="h-4 w-4" />
-                </Button>
-                <Separator />
-                <CreateLink />
-                <InsertImage />
-                <YouTubeButton />
-                <Separator />
-                <InsertTable />
-                <InsertThematicBreak />
-                <Separator />
-                <ListsToggle />
-                <Separator />
-                <BlockTypeSelect />
-                <Separator />
-                <InsertCodeBlock />
-                <Separator />
-                <ConditionalContents
-                  options={[
-                    {
-                      when: (editor) => editor?.editorType === "codeblock",
-                      contents: () => <ChangeCodeMirrorLanguage />,
-                    },
-                    {
-                      when: (editor) => editor?.editorType === "sandpack",
-                      contents: () => <ShowSandpackInfo />,
-                    },
-                  ]}
-                />
-              </DiffSourceToggleWrapper>
-            ),
-          }),
-        ]}
+        readOnly={preview || !editable}
+        plugins={plugins}
         className={resolvedTheme === "dark" ? "dark-theme" : "light-theme"}
       />
     </div>
