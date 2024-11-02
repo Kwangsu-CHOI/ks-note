@@ -75,8 +75,9 @@ const DocumentIdPage = ({ params }: DocumentIdPageProps) => {
       </div>
       <TemplateGenerator
         onTemplateGenerated={(template) => {
-          setContent(template);
-          onChange(template);
+          const newContent = content ? `${content}\n\n${template}` : template;
+          setContent(newContent);
+          onChange(newContent);
           setEditorKey((prev) => prev + 1);
         }}
       />
