@@ -30,6 +30,7 @@ const DocumentIdPage = ({ params }: DocumentIdPageProps) => {
   const update = useMutation(api.documents.update);
 
   const [content, setContent] = useState<string | undefined>(document?.content);
+  const [editorKey, setEditorKey] = useState<number>(0);
 
   useEffect(() => {
     if (document?.content) {
@@ -64,8 +65,6 @@ const DocumentIdPage = ({ params }: DocumentIdPageProps) => {
   if (document === null) {
     return <div>not found</div>;
   }
-
-  const [editorKey, setEditorKey] = useState<number>(0);
 
   return (
     <div className="pb-40">
