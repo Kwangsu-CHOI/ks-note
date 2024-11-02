@@ -14,10 +14,12 @@ export async function POST(request: Request) {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const chat = model.startChat({
-      history: messages.map((msg: any) => ({
-        role: msg.role === "user" ? "user" : "model",
-        parts: [{ text: msg.content }],
-      })),
+      history: isTemplate
+        ? []
+        : messages.map((msg: any) => ({
+            role: msg.role === "user" ? "user" : "model",
+            parts: [{ text: msg.content }],
+          })),
       generationConfig: {
         maxOutputTokens: 1000,
       },
@@ -30,13 +32,14 @@ export async function POST(request: Request) {
 User's request: "${latestMessage}"
 
 Instructions:
+- IMPORTANT: Detect the language of the user's request and respond in the same language.
 - Create a detailed markdown template for the requested topic
 - Use markdown syntax appropriately for headings, sections, and sub-sections
 - Add appropriate examples or guidelines for places where actual content will go
-- Respond in Korean
-- Create a practical and specific template
+- Create a practical and specific template (You can use emojis)
+- All text, including examples and guidelines, MUST be in the same language as the user's request.
 
-Create the template.`
+Create the template now.`
       : `You are a helpful AI assistant. Please follow these instructions:
 
 1. Document content: "${documentContent}"
