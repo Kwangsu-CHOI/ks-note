@@ -46,6 +46,7 @@ const AIChatbot: React.FC<AIChatbotProps> = ({
         body: JSON.stringify({
           messages: [...messages, userMessage],
           documentContent,
+          isTemplate: false,
         }),
       });
 

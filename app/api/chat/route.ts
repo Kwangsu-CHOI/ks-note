@@ -5,7 +5,7 @@ const genAI = new GoogleGenerativeAI(process.env.GOOGLE_API_KEY!);
 
 export async function POST(request: Request) {
   try {
-    const { messages, documentContent } = await request.json();
+    const { messages, documentContent, isTemplate } = await request.json();
 
     if (!process.env.GOOGLE_API_KEY) {
       throw new Error("GOOGLE_API_KEY is not set");
@@ -24,7 +24,20 @@ export async function POST(request: Request) {
     });
 
     const latestMessage = messages[messages.length - 1].content;
-    let prompt = `You are a helpful AI assistant. Please follow these instructions:
+    let prompt = isTemplate
+      ? `You are a professional markdown template creator. Please follow these instructions:
+
+User's request: "${latestMessage}"
+
+Instructions:
+- Create a detailed markdown template for the requested topic
+- Use markdown syntax appropriately for headings, sections, and sub-sections
+- Add appropriate examples or guidelines for places where actual content will go
+- Respond in Korean
+- Create a practical and specific template
+
+Create the template.`
+      : `You are a helpful AI assistant. Please follow these instructions:
 
 1. Document content: "${documentContent}"
 2. User's question: "${latestMessage}"
