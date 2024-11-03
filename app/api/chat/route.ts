@@ -33,6 +33,7 @@ User's request: "${latestMessage}"
 
 Instructions:
 - IMPORTANT: Detect the language of the user's request and respond in the same language.
+- IMPORTANT: Do not repond in Spanish when the user's request is in English and vice versa.
 - Create a detailed markdown template for the requested topic
 - Use markdown syntax appropriately for headings, sections, and sub-sections
 - Add appropriate examples or guidelines for places where actual content will go
