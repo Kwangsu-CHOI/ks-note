@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import ReactMarkdown from "react-markdown";
-import { X, Send, RefreshCw } from "lucide-react";
+import { X, Send, RefreshCw, Maximize2, Minimize2, Copy } from "lucide-react";
+import { toast } from "sonner";
 
 interface AIChatbotProps {
   documentContent: string;
@@ -22,6 +23,8 @@ const AIChatbot: React.FC<AIChatbotProps> = ({
   resetChat,
 }) => {
   const [input, setInput] = useState("");
+  const [isExpanded, setIsExpanded] = useState(false);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -69,11 +72,38 @@ const AIChatbot: React.FC<AIChatbotProps> = ({
     }
   };
 
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(
+        messages.map((msg) => msg.content).join("\n")
+      );
+      toast.success("Copied to clipboard! 👍");
+    } catch (err) {
+      toast.error("Failed to copy to clipboard 😥");
+    }
+  };
+
   return (
-    <div className="fixed bottom-16 left-4 w-80 h-96 bg-card text-card-foreground rounded-lg shadow-lg flex flex-col z-[999999] ai-chatbot">
+    <div
+      className={`fixed bottom-16 left-4 ${
+        isExpanded ? "w-[90vw] h-[90vh] md:w-[600px] md:h-[600px]" : "w-80 h-96"
+      } bg-card text-card-foreground rounded-lg shadow-lg flex flex-col z-[999999] ai-chatbot transition-all duration-300`}
+    >
       <div className="flex justify-between items-center p-2 border-b border-border">
         <h3 className="font-bold text-foreground/70">Ask me anything 😉</h3>
         <div className="flex items-center">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setIsExpanded(!isExpanded)}
+            className="mr-2"
+          >
+            {isExpanded ? (
+              <Minimize2 className="h-4 w-4" />
+            ) : (
+              <Maximize2 className="h-4 w-4" />
+            )}
+          </Button>
           <Button
             variant="ghost"
             size="icon"
@@ -94,12 +124,29 @@ const AIChatbot: React.FC<AIChatbotProps> = ({
             className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
           >
             <div
-              className={`max-w-[70%] p-2 rounded-lg ${msg.role === "user" ? "bg-blue-500 text-white" : "bg-gray-200 text-black"}`}
+              className={`relative group max-w-[70%] p-2 rounded-lg ${
+                msg.role === "user"
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200 text-black"
+              }`}
             >
               {msg.role === "user" ? (
                 msg.content
               ) : (
-                <ReactMarkdown>{msg.content}</ReactMarkdown>
+                <>
+                  <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="absolute -right-8 top-[85%] -translate-y-1/2 text-muted-foreground"
+                    onClick={() => {
+                      navigator.clipboard.writeText(msg.content);
+                      toast.success("메시지가 복사되었습니다!");
+                    }}
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                </>
               )}
             </div>
           </div>
