@@ -58,10 +58,12 @@ const TemplateGenerator: React.FC<TemplateGeneratorProps> = ({
       <Button
         onClick={() => setOpen(true)}
         variant="ghost"
-        size="icon"
-        className="fixed right-4 bottom-5 rounded-full bg-primary hover:bg-secondary transition-colors duration-200 shadow-lg hover:shadow-xl"
+        className="fixed right-4 bottom-5 rounded-full bg-primary hover:bg-secondary transition-all duration-200 shadow-lg hover:shadow-xl group p-2 flex items-center justify-center w-10 h-10"
       >
-        <Wand2 className="h-5 w-5 text-primary-foreground" />
+        <span className="absolute right-[120%] opacity-0 group-hover:opacity-100 whitespace-nowrap transition-all duration-200">
+          Generate Template
+        </span>
+        <Wand2 className="h-5 w-5 text-primary-foreground group-hover:text-primary" />
       </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
